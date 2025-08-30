@@ -1,0 +1,29 @@
+#sidebar-wrapper .bg-dark.text-white-50.list-group-item-action:hover,
+#sidebar-wrapper .bg-dark.text-white-50.list-group-item-action:focus {
+  background-color: #23272b !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.18);
+}
+
+.bg-dark.border-gray-200,
+#sidebar-wrapper {
+  box-shadow: 4px 0 16px 0 rgba(43, 43, 43, 0.18);
+}
+.bg-dark.border-black,
+.bg-dark .border-black {
+  border-color: #000 !important;
+}
+.bg-dark .sidebar-heading.border-bottom {
+  border-color: #000 !important;
+}
+.bg-dark .border-end {
+  border-right-color: #000 !important;
+}
+
+.bg-dark .border-end {
+  border-right-color: #060606 !important;
+}
+
+#sidebar-wrapper {
+  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.18);
+}

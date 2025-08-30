@@ -1,0 +1,12 @@
+/* Ensure table body text is white-50 in dark mode */
+tbody.text-white-50 td,
+tbody.text-white-50 th {
+  color: rgb(192, 189, 189) !important;
+}
+.table td {
+  vertical-align: middle;
+}
+.style-dark {
+  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+    rgba(14, 30, 37, 0.32) 0px 2px 16px 0px !important;
+}
