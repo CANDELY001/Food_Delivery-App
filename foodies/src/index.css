@@ -1,6 +1,6 @@
+@tailwind utilities;
 @import "tailwindcss";
-
-@theme {
+:root {
   --color-blaze-orange-50: #fff7ec;
   --color-blaze-orange-100: #ffeed3;
   --color-blaze-orange-200: #ffd9a5;
@@ -14,8 +14,3 @@
   --color-blaze-orange-950: #461404;
 }
 /* Your global styles (optional) */
-@layer base {
-  body {
-    @apply bg-white text-gray-900 antialiased;
-  }
-}
