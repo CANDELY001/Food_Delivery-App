@@ -2,9 +2,12 @@ import React, { useContext, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import { assets } from "../../assets/assets";
 import "./PlaceOrder.css";
+import { placeOrder } from "../../service/ordersService";
+import { loadStripe } from "@stripe/stripe-js";
 
 const PlaceOrder = () => {
-  const { foodlist, quantities = {} } = useContext(StoreContext);
+  const { foodlist, quantities, setQuantities, token } =
+    useContext(StoreContext);
   const cartItems = Array.isArray(foodlist)
     ? foodlist.filter((item) => quantities[item.id] > 0)
     : [];
@@ -15,25 +18,82 @@ const PlaceOrder = () => {
   const shipping = cartItems.length * 5;
   const tax = subtotal * 0.02;
   const total = subtotal + shipping + tax;
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+  const [payment, setPayment] = useState("card");
 
-  const [address, setAddress] = useState({
+  const [data, setData] = useState({
     name: "",
+    email: "",
+    phoneNumber: "",
     street: "",
     city: "",
     zip: "",
     country: "",
   });
-  const [payment, setPayment] = useState("card");
-
-  function handleAddressChange(e) {
-    setAddress({ ...address, [e.target.name]: e.target.value });
+  function onChangeHandler(e) {
+    const name = e.target.name;
+    const value = e.target.value;
+    setData({ ...data, [name]: value });
   }
 
-  function handlePlaceOrder(e) {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
-    // You can add order logic here
-    alert("Order placed successfully!");
-  }
+
+    // Prepare order details
+    const orderDetails = {
+      userAddress: `${data.name}, ${data.street}, ${data.city}, ${data.zip}, ${data.country}`,
+      phoneNumber: data.phoneNumber,
+      email: data.email,
+      orderedItems: cartItems.map((item) => ({
+        foodId: item.id,
+        quantity: quantities[item.id],
+        price: item.price * quantities[item.id],
+        category: item.category,
+        name: item.name,
+        imageUrl: item.imageUrl,
+        description: item.description,
+      })),
+      amount: total.toFixed(2),
+      orderStatus: "PREPARING",
+    };
+
+    try {
+      // Send order to backend
+      const orderResponse = await placeOrder(orderDetails, token);
+      console.log("Order Response:", orderResponse);
+
+      const sessionId = orderResponse.stripeCheckoutSessionId;
+      if (!sessionId) {
+        alert("Stripe session not created. Cannot proceed to payment.");
+        return;
+      }
+
+      // Redirect to Stripe Checkout
+      const stripe = await stripePromise;
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+
+      if (error) {
+        console.error("Stripe Checkout error:", error);
+        alert("Failed to redirect to payment. Please try again.");
+        return;
+      }
+
+      // Clear form and cart only after redirect attempt
+      setQuantities({});
+      setData({
+        name: "",
+        email: "",
+        phoneNumber: "",
+        street: "",
+        city: "",
+        zip: "",
+        country: "",
+      });
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("Failed to place order. Please try again.");
+    }
+  };
 
   return (
     <div
@@ -48,7 +108,7 @@ const PlaceOrder = () => {
           <form
             className="p-4 shadow-sm bg-white rounded"
             style={{ borderRadius: "18px", border: "2px solid #ffe5b4" }}
-            onSubmit={handlePlaceOrder}
+            onSubmit={onSubmitHandler}
           >
             <div className="d-flex align-items-center mb-3">
               <img
@@ -70,8 +130,8 @@ const PlaceOrder = () => {
                 type="text"
                 className="form-control"
                 name="name"
-                value={address.name}
-                onChange={handleAddressChange}
+                value={data.name}
+                onChange={onChangeHandler}
                 required
                 placeholder="Enter your full name"
                 // style={{ borderColor: "#ffc107" }}
@@ -83,8 +143,8 @@ const PlaceOrder = () => {
                 type="email"
                 className="form-control"
                 name="email"
-                value={address.email || ""}
-                onChange={handleAddressChange}
+                value={data.email || ""}
+                onChange={onChangeHandler}
                 required
                 placeholder="Enter your email address"
                 // style={{ borderColor: "#ffc107" }}
@@ -95,9 +155,9 @@ const PlaceOrder = () => {
               <input
                 type="number"
                 className="form-control"
-                name="phone"
-                value={address.phone || ""}
-                onChange={handleAddressChange}
+                name="phoneNumber"
+                value={data.phoneNumber || ""}
+                onChange={onChangeHandler}
                 required
                 placeholder="Enter your phone number"
                 // style={{ borderColor: "#ffc107" }}
@@ -109,8 +169,8 @@ const PlaceOrder = () => {
                 type="text"
                 className="form-control"
                 name="street"
-                value={address.street}
-                onChange={handleAddressChange}
+                value={data.street || ""}
+                onChange={onChangeHandler}
                 required
                 placeholder="Enter your street address"
                 // style={{ borderColor: "#ffc107" }}
@@ -123,8 +183,8 @@ const PlaceOrder = () => {
                   type="text"
                   className="form-control"
                   name="city"
-                  value={address.city}
-                  onChange={handleAddressChange}
+                  value={data.city || ""}
+                  onChange={onChangeHandler}
                   required
                   placeholder="City"
                   //   style={{ borderColor: "#ffc107" }}
@@ -136,8 +196,8 @@ const PlaceOrder = () => {
                   type="text"
                   className="form-control"
                   name="zip"
-                  value={address.zip}
-                  onChange={handleAddressChange}
+                  value={data.zip || ""}
+                  onChange={onChangeHandler}
                   required
                   placeholder="ZIP Code"
                   //   style={{ borderColor: "#ffc107" }}
@@ -149,8 +209,8 @@ const PlaceOrder = () => {
                   type="text"
                   className="form-control"
                   name="country"
-                  value={address.country}
-                  onChange={handleAddressChange}
+                  value={data.country || ""}
+                  onChange={onChangeHandler}
                   required
                   placeholder="Country"
                   //   style={{ borderColor: "#ffc107" }}

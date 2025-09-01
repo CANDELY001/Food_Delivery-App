@@ -7,10 +7,14 @@ import rolls from "./images/rolls1.png";
 import salad from "./images/salade8.png";
 import ice from "./images/ice3.png";
 import meals from "./images/meal1.png";
-
+import pizzahero from "./images/pizza2.png";
+import user from "./images/user.png";
+import parcel from "./images/parcel.png";
 export const assets = {
   logo,
   cart,
+  user,
+  parcel,
 };
 export const categories = [
   {
@@ -43,3 +47,9 @@ export const categories = [
     icon: salad,
   },
 ];
+
+export const heroimages = {
+  salad,
+  meals,
+  pizzahero,
+};

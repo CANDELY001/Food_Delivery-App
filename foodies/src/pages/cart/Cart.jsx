@@ -240,7 +240,7 @@ const CartPage = () => {
 
               <div className="d-flex justify-content-center gap-2">
                 <i className="bi bi-shield-check text-success"></i>
-                <small class="text-muted">Secure checkout</small>
+                <small className="text-muted">Secure checkout</small>
               </div>
             </div>
           </div>

@@ -12,6 +12,7 @@ const AddFood = ({ darkMode }) => {
     "Ice-Cream",
     "Rolls",
     "Salads",
+    "Pizza",
   ];
   const [image, setImage] = useState(false);
   const [data, setData] = useState({

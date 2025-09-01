@@ -24,7 +24,7 @@ const ExploreMenu = ({ category, setCategory }) => {
 
   return (
     <div className="explore-menu position-relative">
-      <h1 className="d-flex align-items-center justify-content-between ">
+      <h1 className="d-flex fw-bold align-items-center justify-content-between mt-5">
         Explore Our Menu
         <div className="d-flex">
           <i

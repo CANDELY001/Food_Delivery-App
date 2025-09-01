@@ -6,8 +6,16 @@ import { Link, useNavigate } from "react-router-dom";
 
 const MenuBar = () => {
   const [active, setActive] = useState("home");
-  const { quantities } = useContext(StoreContext);
+  const { quantities, token, setToken, setQuantities } =
+    useContext(StoreContext);
   const navigate = useNavigate();
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+    setQuantities({});
+    navigate("/login");
+  };
   //unique items in cart
   const cartQuantity = quantities
     ? Object.values(quantities).reduce((acc, qty) => acc + qty, 0)
@@ -39,7 +47,7 @@ const MenuBar = () => {
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 fw-semibold">
             <li className="nav-item ">
               <Link
-                className={active === "home" ? "nav-link active" : "nav-link"}
+                className={active === "home" ? "nav-link active " : "nav-link"}
                 aria-current="page"
                 to="/"
                 onClick={() => setActive("home")}
@@ -86,20 +94,52 @@ const MenuBar = () => {
                 </span>
               </Link>
             </div>
-            <button
-              className="btn btn-outline-warning"
-              type="submit"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </button>
-            <button
-              className="btn btn-outline-success"
-              type="submit"
-              onClick={() => navigate("/register")}
-            >
-              Register
-            </button>
+            {!token ? (
+              <>
+                <button
+                  className="btn btn-outline-warning"
+                  type="submit"
+                  onClick={() => navigate("/login")}
+                >
+                  Login
+                </button>
+                <button
+                  className="btn btn-outline-success"
+                  type="submit"
+                  onClick={() => navigate("/register")}
+                >
+                  Register
+                </button>
+              </>
+            ) : (
+              <div className="dropdown text-end">
+                <a
+                  href="#!"
+                  className="d-block link-dark text-decoration-none dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <img
+                    src={assets.user}
+                    alt="user icon"
+                    height={50}
+                    width={50}
+                    className="rounded-circle"
+                  />
+                </a>
+                <ul className="dropdown-menu text-small ">
+                  <li
+                    className="dropdown-item cursor-pointer"
+                    onClick={() => navigate("/myorders")}
+                  >
+                    Orders
+                  </li>
+                  <li className="dropdown-item" onClick={logout}>
+                    logout
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>
